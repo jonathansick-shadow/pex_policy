@@ -1,8 +1,8 @@
 #!/usr/bin/env python
-# 
+#
 # LSST Data Management System
 # Copyright 2008, 2009, 2010 LSST Corporation.
-# 
+#
 # This product includes software developed by the
 # LSST Project (http://www.lsst.org/).
 #
@@ -10,14 +10,14 @@
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
-# 
+#
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
-# 
-# You should have received a copy of the LSST License Statement and 
-# the GNU General Public License along with this program.  If not, 
+#
+# You should have received a copy of the LSST License Statement and
+# the GNU General Public License along with this program.  If not,
 # see <http://www.lsstcorp.org/LegalNotices/>.
 #
 
@@ -33,6 +33,7 @@ from lsst.pex.policy import ValidationError, DictionaryError
 import lsst.pex.exceptions
 
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+
 
 class DictionaryTestCase(unittest.TestCase):
 
@@ -51,7 +52,7 @@ class DictionaryTestCase(unittest.TestCase):
             callableObj(*args, **kwargs)
         except excClass as e:
             self.assert_(str(e).find(excMsg) > 0,
-                         failMsg + ": expected to see the message \"" + excMsg 
+                         failMsg + ": expected to see the message \"" + excMsg
                          + "\"; actual message was \"" + str(e) + "\".")
         else:
             self.fail(failMsg + ": did not raise " + excClass)
@@ -63,6 +64,7 @@ class DictionaryTestCase(unittest.TestCase):
             self.assertEqual(e.getErrors(field), errorCode)
 
     testDictDir = None
+
     def getTestDictionary(self, filename=None):
         if not self.testDictDir:
             pexPolicyDir = lsst.utils.getPackageDir('pex_policy')
@@ -175,13 +177,13 @@ class DictionaryTestCase(unittest.TestCase):
         ve = ValidationError("Dictionary_1.py", 0, "testTypeValidation")
         d.validate(p, ve.cpp)
 
-        self.assert_(ve.getErrors("undef_type")  == 0, "no errors with undef")
-        self.assert_(ve.getErrors("int_type")    == 0, "no errors with int")
+        self.assert_(ve.getErrors("undef_type") == 0, "no errors with undef")
+        self.assert_(ve.getErrors("int_type") == 0, "no errors with int")
         self.assert_(ve.getErrors("double_type") == 0, "no errors with double")
-        self.assert_(ve.getErrors("bool_type")   == 0, "no errors with bool")
+        self.assert_(ve.getErrors("bool_type") == 0, "no errors with bool")
         self.assert_(ve.getErrors("string_type") == 0, "no errors with string")
         self.assert_(ve.getErrors("policy_type") == 0, "no errors with policy")
-        self.assert_(ve.getErrors("file_type")   == 0, "no errors with file")
+        self.assert_(ve.getErrors("file_type") == 0, "no errors with file")
         self.assert_(ve.getErrors() == 0, "no errors overall")
 
     def testWrongType(self):
@@ -193,7 +195,7 @@ class DictionaryTestCase(unittest.TestCase):
         self.assert_(ve.getErrors() == ValidationError.WRONG_TYPE, "wrong type")
         self.assert_(ve.getParamCount() == 5, "number of errors")
         self.assert_(ve.getErrors("bool_type") == 0, "correct type")
-        
+
         p = Policy(self.getTestDictionary("types_policy_bad_int.paf"))
         ve = ValidationError("Dictionary_1.py", 1, "testWrongType")
         d.validate(p, ve.cpp)
@@ -202,7 +204,7 @@ class DictionaryTestCase(unittest.TestCase):
         self.assert_(ve.getErrors("int_type") == 0, "correct type")
         self.assert_(ve.getErrors("double_type") == ValidationError.WRONG_TYPE,
                      "int can't pass as double")
-        
+
         p = Policy(self.getTestDictionary("types_policy_bad_double.paf"))
         ve = ValidationError("Dictionary_1.py", 2, "testWrongType")
         d.validate(p, ve.cpp)
@@ -256,17 +258,17 @@ class DictionaryTestCase(unittest.TestCase):
         p = Policy(self.getTestDictionary("values_policy_bad_policy_set.paf"))
         ve = ValidationError("Dictionary_1.py", 1, "testValues")
         d.validate(p, ve.cpp)
-        self.assert_(ve.getErrors("policy_set_type") 
+        self.assert_(ve.getErrors("policy_set_type")
                      == ValidationError.VALUE_DISALLOWED)
         p = Policy(self.getTestDictionary("values_policy_bad_policy_max.paf"))
         ve = ValidationError("Dictionary_1.py", 2, "testValues")
         d.validate(p, ve.cpp)
-        self.assert_(ve.getErrors("policy_max_type") 
+        self.assert_(ve.getErrors("policy_max_type")
                      == ValidationError.VALUE_OUT_OF_RANGE)
         p = Policy(self.getTestDictionary("values_policy_bad_policy_min.paf"))
         ve = ValidationError("Dictionary_1.py", 3, "testValues")
         d.validate(p, ve.cpp)
-        self.assert_(ve.getErrors("policy_min_type") 
+        self.assert_(ve.getErrors("policy_min_type")
                      == ValidationError.VALUE_OUT_OF_RANGE)
 
         # minOccurs/maxOccurs
@@ -275,17 +277,17 @@ class DictionaryTestCase(unittest.TestCase):
         d.validate(p, ve.cpp)
         self.assert_(ve.getParamCount() == 6)
         self.assert_(ve.getErrors("bool_set_count_type")
-                    == ValidationError.TOO_MANY_VALUES)
+                     == ValidationError.TOO_MANY_VALUES)
         self.assert_(ve.getErrors("int_range_count_type")
-                    == ValidationError.MISSING_REQUIRED)
+                     == ValidationError.MISSING_REQUIRED)
         self.assert_(ve.getErrors("double_range_count_type")
-                    == ValidationError.TOO_MANY_VALUES)
+                     == ValidationError.TOO_MANY_VALUES)
         self.assert_(ve.getErrors("string_count_type")
-                    == ValidationError.ARRAY_TOO_SHORT)
+                     == ValidationError.ARRAY_TOO_SHORT)
         self.assert_(ve.getErrors("disallowed")
-                    == ValidationError.TOO_MANY_VALUES)
+                     == ValidationError.TOO_MANY_VALUES)
         self.assert_(ve.getErrors("policy_count_type")
-                    == ValidationError.TOO_MANY_VALUES)
+                     == ValidationError.TOO_MANY_VALUES)
 
         # min
         p = Policy(self.getTestDictionary("values_policy_bad_min.paf"))
@@ -319,11 +321,11 @@ class DictionaryTestCase(unittest.TestCase):
         ve = ValidationError("Dictionary_1.py", 1, "testValues")
         d.validate(p, ve.cpp)
         self.assert_(ve.getParamCount() == 2)
-        self.assert_(ve.getErrors("int_range_set_type") 
-                     == ValidationError.VALUE_DISALLOWED 
+        self.assert_(ve.getErrors("int_range_set_type")
+                     == ValidationError.VALUE_DISALLOWED
                      + ValidationError.VALUE_OUT_OF_RANGE)
-        self.assert_(ve.getErrors("double_range_count_type") 
-                     == ValidationError.TOO_MANY_VALUES 
+        self.assert_(ve.getErrors("double_range_count_type")
+                     == ValidationError.TOO_MANY_VALUES
                      + ValidationError.VALUE_OUT_OF_RANGE)
         ve = ValidationError("Dictionary_1.py", 1, "testValues")
         d.validate(p, ve.cpp)
@@ -348,7 +350,7 @@ class DictionaryTestCase(unittest.TestCase):
         self.assert_(not d.hasSubDictionary("policy_load"))
         n = d.loadPolicyFiles(self.getTestDictionary(), True)
         self.assert_(d.hasSubDictionary("policy_load"))
-        self.assert_(n == 1) # number of files loaded
+        self.assert_(n == 1)  # number of files loaded
         d.validate(p)
 
         ve = ValidationError("Dictionary_1.py", 1, "testNested")
@@ -378,7 +380,7 @@ class DictionaryTestCase(unittest.TestCase):
         d = Dictionary(self.getTestDictionary("nested_dictionary_1.paf"))
         n = d.loadPolicyFiles(self.getTestDictionary())
         self.assert_(n == 3)
-        p = Policy(True, d) # load from defaults
+        p = Policy(True, d)  # load from defaults
         self.assert_(p.getString("1.2a.foo") == "bar")
         self.assert_(p.getString("1.2b.foo") == "bar")
 
@@ -418,14 +420,14 @@ class DictionaryTestCase(unittest.TestCase):
         self.assert_(ve.getErrors("deb") == ValidationError.NOT_AN_ARRAY)
         self.assert_(ve.getErrors("bob") == ValidationError.NOT_AN_ARRAY)
         self.assert_(ve.getErrors("bob.bar") == ValidationError.NOT_AN_ARRAY)
-        self.assert_(ve.getErrors("nested.helen.qux") 
+        self.assert_(ve.getErrors("nested.helen.qux")
                      == ValidationError.MISSING_REQUIRED)
-        self.assert_(ve.getErrors("nested.marvin.rafael") 
+        self.assert_(ve.getErrors("nested.marvin.rafael")
                      == ValidationError.TOO_MANY_VALUES)
-        self.assert_(ve.getErrors("disallowed.foo") 
+        self.assert_(ve.getErrors("disallowed.foo")
                      == ValidationError.TOO_MANY_VALUES)
         self.assert_(ve.getParamCount() == 7)
-        
+
     def testDefaults(self):
         p = Policy.createPolicy(self.getTestDictionary("defaults_dictionary_good.paf"),
                                 "", True)
@@ -455,16 +457,16 @@ class DictionaryTestCase(unittest.TestCase):
                                 "", True)
         self.assert_(p.canValidate())
         self.assertValidationError(
-            ValidationError.TOO_MANY_VALUES, 
+            ValidationError.TOO_MANY_VALUES,
             p.add, "bool_set_count", True)
         self.assert_(p.valueCount("bool_set_count") == 1)
         self.assertValidationError(
-            ValidationError.VALUE_DISALLOWED, 
+            ValidationError.VALUE_DISALLOWED,
             p.set, "bool_set_count", False)
         self.assert_(p.getBool("bool_set_count") == True)
         p.set("int_range_count", -7)
         self.assertValidationError(
-            ValidationError.VALUE_OUT_OF_RANGE, 
+            ValidationError.VALUE_OUT_OF_RANGE,
             p.add, "int_range_count", 10)
         # add & set don't check against minOccurs, but validate() does
         try:
@@ -550,7 +552,7 @@ class DictionaryTestCase(unittest.TestCase):
         p.mergeDefaults(pd)
         self.assert_(p.getString("string_type") == "foo")
         self.assert_(p.getDictionary().isDictionary())
-        
+
         # from a policy that's really a non-trivial dictionary
         p = Policy(self.getTestDictionary("defaults_policy_partial.paf"))
         p.set("required", "foo")
@@ -588,7 +590,7 @@ class DictionaryTestCase(unittest.TestCase):
         # make sure validate() fails gracefully when no dictionary present
         self.assertRaiseLCE(DictionaryError, "No dictionary",
                             p.validate, "No dictionary assigned")
-        p.add("unknown", 0) # would be rejected if dictionary was kept
+        p.add("unknown", 0)  # would be rejected if dictionary was kept
 
         # deep merge from a Policy that's not a Dictionary
         p = Policy(self.getTestDictionary("defaults_policy_partial.paf"))
@@ -651,6 +653,7 @@ class DictionaryTestCase(unittest.TestCase):
                             "it means a known bug has been fixed.  That's good.",
                             "empty_sub_no_default.foo", "baz")
 
+
 def suite():
     """a suite containing all the test cases in this module"""
     tests.init()
@@ -660,6 +663,7 @@ def suite():
     suites += unittest.makeSuite(tests.MemoryTestCase)
 
     return unittest.TestSuite(suites)
+
 
 def run(exit=False):
     """Run the tests"""
